@@ -68,7 +68,7 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
     }
 
     @Override
-    SimpleTopic<EntityCacheInvalidate> getInstance() {
+    SimpleTopic<EntityCacheInvalidate> getInstance(Object... parameters) {
         if (entityCacheInvalidateTopic == null) throw new IllegalStateException("HazelcastDciTopicToolFactory not initialized")
         return entityCacheInvalidateTopic
     }

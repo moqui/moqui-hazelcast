@@ -57,7 +57,7 @@ class HazelcastExecutorToolFactory implements ToolFactory<ExecutorService> {
     }
 
     @Override
-    ExecutorService getInstance() {
+    ExecutorService getInstance(Object... parameters) {
         if (executorService == null) throw new IllegalStateException("HazelcastExecutorToolFactory not initialized")
         return executorService
     }

@@ -65,7 +65,7 @@ class HazelcastCacheToolFactory implements ToolFactory<CacheManager> {
     }
 
     @Override
-    CacheManager getInstance() {
+    CacheManager getInstance(Object... parameters) {
         if (cacheManager == null) throw new IllegalStateException("HazelcastCacheToolFactory not initialized")
         return cacheManager
     }
