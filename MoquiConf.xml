@@ -2,12 +2,13 @@
 <!-- No copyright or license for configuration file, details here are not considered a creative work. -->
 <moqui-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/moqui-conf-2.0.xsd">
 
-    <tools>
+    <tools notification-topic-factory="HazelcastNotificationTopic">
         <!-- Hazelcast distributed tool set for caching, topics, executors, etc -->
         <tool-factory class="org.moqui.hazelcast.HazelcastToolFactory" init-priority="05" disabled="false"/>
         <tool-factory class="org.moqui.hazelcast.HazelcastCacheToolFactory" init-priority="06" disabled="false"/>
-        <tool-factory class="org.moqui.hazelcast.HazelcastDciTopicToolFactory" init-priority="07" disabled="false"/>
-        <tool-factory class="org.moqui.hazelcast.HazelcastExecutorToolFactory" init-priority="08" disabled="false"/>
+        <tool-factory class="org.moqui.hazelcast.HazelcastDciTopicToolFactory" init-priority="06" disabled="false"/>
+        <tool-factory class="org.moqui.hazelcast.HazelcastNotificationTopicToolFactory" init-priority="06" disabled="false"/>
+        <tool-factory class="org.moqui.hazelcast.HazelcastExecutorToolFactory" init-priority="06" disabled="false"/>
     </tools>
 
     <cache-list distributed-factory="HazelcastCache"/>

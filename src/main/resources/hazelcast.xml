@@ -35,7 +35,13 @@
         <!-- NOTE: uses hazelcast.event, see queue.capacity, queue.timeout.millis, and thread.count properties -->
         <global-ordering-enabled>false</global-ordering-enabled>
         <statistics-enabled>true</statistics-enabled>
-        <!-- register listener at runtime so has ECFI reference: <message-listeners><message-listener>foo</message-listener></message-listeners> -->
+        <!-- register listener in ToolFactory so has ECFI reference: <message-listeners><message-listener>foo</message-listener></message-listeners> -->
+    </topic>
+    <topic name="notification-message">
+        <!-- NOTE: uses hazelcast.event, see queue.capacity, queue.timeout.millis, and thread.count properties -->
+        <global-ordering-enabled>false</global-ordering-enabled>
+        <statistics-enabled>true</statistics-enabled>
+        <!-- register listener in ToolFactory so has ECFI reference: <message-listeners><message-listener>foo</message-listener></message-listeners> -->
     </topic>
     <executor-service name="service-executor">
         <pool-size>4</pool-size>
