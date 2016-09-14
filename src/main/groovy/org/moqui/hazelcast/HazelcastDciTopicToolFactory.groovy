@@ -96,14 +96,9 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
         @Override
         void onMessage(Message<EntityCacheInvalidate> message) {
             EntityCacheInvalidate eci = message.getMessageObject()
-            if (eci.tenantId == null) {
-                logger.warn("Received EntityCacheInvalidate message with null tenantId, ignoring")
-                return
-            }
             // logger.info("====== EntityCacheListener message tenantId=${eci.tenantId} isCreate=${eci.isCreate}, evb: ${eci.evb}")
-            ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, eci.tenantId, null, {
-                EntityFacadeImpl efi = ecfi.getEntityFacade(eci.tenantId)
-                efi.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
+            ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, null, {
+                ecfi.entityFacade.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
             })
             ecfi.workerPool.execute(runnable)
         }
