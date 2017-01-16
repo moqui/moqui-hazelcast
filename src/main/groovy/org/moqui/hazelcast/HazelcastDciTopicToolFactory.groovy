@@ -24,7 +24,6 @@ import org.moqui.context.ToolFactory
 import org.moqui.impl.context.ExecutionContextFactoryImpl
 import org.moqui.impl.context.ExecutionContextImpl
 import org.moqui.impl.entity.EntityCache.EntityCacheInvalidate
-import org.moqui.impl.entity.EntityFacadeImpl
 import org.moqui.util.SimpleTopic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -59,7 +58,7 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
             throw new BaseException("HazelcastToolFactory not in place, cannot use HazelcastDciTopicToolFactory")
         } else {
             logger.info("Getting Entity Cache Invalidate Hazelcast Topic and registering MessageListener")
-            HazelcastInstance hazelcastInstance = hzToolFactory.getInstance()
+            hazelcastInstance = hzToolFactory.getInstance()
             ITopic<EntityCacheInvalidate> iTopic = hazelcastInstance.getTopic("entity-cache-invalidate")
             EntityCacheListener eciListener = new EntityCacheListener(ecfi)
             iTopic.addMessageListener(eciListener)
@@ -97,7 +96,7 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
         void onMessage(Message<EntityCacheInvalidate> message) {
             EntityCacheInvalidate eci = message.getMessageObject()
             // logger.info("====== EntityCacheListener message tenantId=${eci.tenantId} isCreate=${eci.isCreate}, evb: ${eci.evb}")
-            ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, null, {
+            ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, {
                 ecfi.entityFacade.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
             })
             ecfi.workerPool.execute(runnable)
