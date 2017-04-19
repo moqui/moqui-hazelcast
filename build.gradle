@@ -15,7 +15,7 @@
 apply plugin: 'groovy'
 
 sourceCompatibility = '1.8'
-version = '1.0.0'
+version = '1.0.1'
 def jarBaseName = 'moqui-hazelcast'
 def moquiDir = projectDir.parentFile.parentFile.parentFile
 def frameworkDir = file(moquiDir.absolutePath + '/framework')
@@ -24,7 +24,7 @@ def frameworkDir = file(moquiDir.absolutePath + '/framework')
 apply plugin: 'com.github.ben-manes.versions'
 buildscript {
   repositories { jcenter() }
-  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0' }
+  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0' }
 }
 repositories {
     flatDir name: 'localLib', dirs: frameworkDir.absolutePath + '/lib'
@@ -34,8 +34,8 @@ repositories {
 dependencies {
     compile project(':framework')
 
-    // use hazelcast-all so various options are available, not that at least hazelcast-wm is needed for web listener
-    compile 'com.hazelcast:hazelcast-all:3.7.3' // Apache 2.0
+    // use hazelcast-all so various options are available, note that at least hazelcast-wm is needed for web listener
+    compile 'com.hazelcast:hazelcast-all:3.8.1' // Apache 2.0
 }
 
 // by default the Java plugin runs test on build, change to not do that (only run test if explicit task)
