@@ -15,8 +15,9 @@
 apply plugin: 'groovy'
 
 sourceCompatibility = '1.8'
-version = '1.0.1'
-def jarBaseName = 'moqui-hazelcast'
+def componentNode = parseComponent(project)
+version = componentNode.'@version'
+def jarBaseName = componentNode.'@name'
 def moquiDir = projectDir.parentFile.parentFile.parentFile
 def frameworkDir = file(moquiDir.absolutePath + '/framework')
 
