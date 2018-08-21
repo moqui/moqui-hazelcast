@@ -19,6 +19,7 @@ import com.hazelcast.core.Message
 import com.hazelcast.core.MessageListener
 import groovy.transform.CompileStatic
 import org.moqui.BaseException
+import org.moqui.Moqui
 import org.moqui.context.ExecutionContextFactory
 import org.moqui.context.ToolFactory
 import org.moqui.impl.context.ExecutionContextFactoryImpl
@@ -94,8 +95,12 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
 
         @Override
         void onMessage(Message<EntityCacheInvalidate> message) {
+            if (Moqui.getExecutionContextFactory() == null) {
+                if (logger.isDebugEnabled()) logger.debug("ExecutionContextFactory not initialized, ignoring entity DCI message")
+                return
+            }
             EntityCacheInvalidate eci = message.getMessageObject()
-            // logger.info("====== EntityCacheListener message tenantId=${eci.tenantId} isCreate=${eci.isCreate}, evb: ${eci.evb}")
+            // logger.info("====== EntityCacheListener message isCreate=${eci.isCreate}, evb: ${eci.evb}")
             ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, {
                 ecfi.entityFacade.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
             })
