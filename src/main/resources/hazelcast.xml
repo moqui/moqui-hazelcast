@@ -41,7 +41,7 @@
                         <property name="security-group-name">${hazelcast_aws_security_group}</property>
                         <property name="tag-key">${hazelcast_aws_tag_key}</property>
                         <property name="tag-value">${hazelcast_aws_tag_value}</property>
-                        <property name="hz-port">5701-5708</property>
+                        <property name="hz-port">${hazelcast_aws_hz_port}</property>
                     </properties>
                 </discovery-strategy>
             </discovery-strategies>

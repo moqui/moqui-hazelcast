@@ -21,6 +21,7 @@
     <default-property name="hazelcast_aws_host_header" value=""/>
     <default-property name="hazelcast_aws_tag_key" value=""/>
     <default-property name="hazelcast_aws_tag_value" value=""/>
+    <default-property name="hazelcast_aws_hz_port" value="5701"/>
 
     <tools notification-topic-factory="HazelcastNotificationTopic">
         <!-- Hazelcast distributed tool set for caching, topics, executors, etc -->
