@@ -2,6 +2,26 @@
 <!-- No copyright or license for configuration file, details here are not considered a creative work. -->
 <moqui-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/moqui-conf-2.1.xsd">
 
+    <default-property name="hazelcast_group_name" value="dev"/>
+    <default-property name="hazelcast_group_password" value="dev-pass"/>
+
+    <default-property name="hazelcast_multicast_enabled" value="false"/>
+    <default-property name="hazelcast_multicast_group" value="224.2.2.3"/>
+    <default-property name="hazelcast_multicast_port" value="54327"/>
+
+    <default-property name="hazelcast_tcp_ip_enabled" value="false"/>
+    <default-property name="hazelcast_tcp_ip_members" value="false"/>
+
+    <default-property name="hazelcast_aws_enabled" value="false"/>
+    <default-property name="hazelcast_aws_iam_role" value=""/>
+    <default-property name="hazelcast_aws_region" value=""/>
+    <default-property name="hazelcast_aws_security_group" value=""/>
+    <default-property name="hazelcast_aws_access_key" value=""/>
+    <default-property name="hazelcast_aws_secret_key" value=""/>
+    <default-property name="hazelcast_aws_host_header" value=""/>
+    <default-property name="hazelcast_aws_tag_key" value=""/>
+    <default-property name="hazelcast_aws_tag_value" value=""/>
+
     <tools notification-topic-factory="HazelcastNotificationTopic">
         <!-- Hazelcast distributed tool set for caching, topics, executors, etc -->
         <tool-factory class="org.moqui.hazelcast.HazelcastToolFactory" init-priority="05" disabled="false"/>
