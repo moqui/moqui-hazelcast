@@ -46,6 +46,11 @@
                 </discovery-strategy>
             </discovery-strategies>
         </join>
+        <interfaces enabled="${hazelcast_interfaces_enabled}">
+            <interface>${hazelcast_interface1}</interface>
+            <interface>${hazelcast_interface2}</interface>
+            <interface>${hazelcast_interface3}</interface>
+        </interfaces>
     </network>
 
     <topic name="entity-cache-invalidate">
