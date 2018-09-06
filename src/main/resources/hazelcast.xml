@@ -9,8 +9,9 @@
         <property name="hazelcast.event.queue.capacity">1000000</property>
         <property name="hazelcast.event.queue.timeout.millis">500</property>
         <property name="hazelcast.event.thread.count">5</property>
-    </properties>
 
+        <property name="hazelcast.discovery.enabled">${hazelcast_aws_enabled}</property>
+    </properties>
     <group><name>${hazelcast_group_name}</name><password>${hazelcast_group_password}</password></group>
 
     <!-- For connecting to external management center application (commercial add-on, see https://hazelcast.com/products/management-center/) -->
