@@ -10,9 +10,12 @@
         <property name="hazelcast.event.queue.timeout.millis">500</property>
         <property name="hazelcast.event.thread.count">5</property>
 
-        <property name="hazelcast.discovery.enabled">${hazelcast_aws_enabled}</property>
+        <!-- NOTE: for reference only, handled programmatically in HazelcastToolFactory.groovy, see notes below for why:
+            NOTE2: removed '$' so Hazelcast does not try to expand these, otherwise it will even in comments
+        <property name="hazelcast.discovery.enabled">{hazelcast_aws_enabled}</property>
+        -->
     </properties>
-    <group><name>${hazelcast_group_name}</name><password>${hazelcast_group_password}</password></group>
+    <group><name>${hazelcast_group_name}</name></group>
 
     <!-- For connecting to external management center application (commercial add-on, see https://hazelcast.com/products/management-center/) -->
     <management-center enabled="false">http://localhost:8081/mancenter</management-center>
@@ -22,36 +25,44 @@
         <!-- Allowed port range when connecting to other nodes. 0 or * means use system provided port. -->
         <outbound-ports><ports>0</ports></outbound-ports>
         <join>
-            <multicast enabled="${hazelcast_multicast_enabled}">
-                <multicast-group>${hazelcast_multicast_group}</multicast-group>
-                <multicast-port>${hazelcast_multicast_port}</multicast-port>
-            </multicast>
-            <tcp-ip enabled="${hazelcast_tcp_ip_enabled}">
-                <members>${hazelcast_tcp_ip_members}</members>
-            </tcp-ip>
+            <multicast enabled="false"/>
+            <tcp-ip enabled="false"/>
             <aws enabled="false"/>
+            <!-- NOTE: for reference only, handled programmatically in HazelcastToolFactory.groovy because Hazelcast uses placeholder
+                value instead of empty/null if property not specified, ie no way to not set a property using this approach:
+                NOTE2: removed '$' so Hazelcast does not try to expand these, otherwise it will even in comments
+            <multicast enabled="{hazelcast_multicast_enabled}">
+                <multicast-group>{hazelcast_multicast_group}</multicast-group>
+                <multicast-port>{hazelcast_multicast_port}</multicast-port>
+            </multicast>
+            <tcp-ip enabled="{hazelcast_tcp_ip_enabled}">
+                <members>{hazelcast_tcp_ip_members}</members>
+            </tcp-ip>
             <discovery-strategies>
-                <!-- class equals to the DiscoveryStrategy not the factory! -->
-                <discovery-strategy enabled="${hazelcast_aws_enabled}" class="com.hazelcast.aws.AwsDiscoveryStrategy">
+                <discovery-strategy enabled="{hazelcast_aws_enabled}" class="com.hazelcast.aws.AwsDiscoveryStrategy">
                     <properties>
-                        <property name="access-key">${hazelcast_aws_access_key}</property>
-                        <property name="secret-key">${hazelcast_aws_secret_key}</property>
-                        <property name="iam-role">${hazelcast_aws_iam_role}</property>
-                        <property name="region">${hazelcast_aws_region}</property>
-                        <property name="host-header">${hazelcast_aws_host_header}</property>
-                        <property name="security-group-name">${hazelcast_aws_security_group}</property>
-                        <property name="tag-key">${hazelcast_aws_tag_key}</property>
-                        <property name="tag-value">${hazelcast_aws_tag_value}</property>
-                        <property name="hz-port">${hazelcast_aws_hz_port}</property>
+                        <property name="access-key">{hazelcast_aws_access_key}</property>
+                        <property name="secret-key">{hazelcast_aws_secret_key}</property>
+                        <property name="iam-role">{hazelcast_aws_iam_role}</property>
+                        <property name="region">{hazelcast_aws_region}</property>
+                        <property name="host-header">{hazelcast_aws_host_header}</property>
+                        <property name="security-group-name">{hazelcast_aws_security_group}</property>
+                        <property name="tag-key">{hazelcast_aws_tag_key}</property>
+                        <property name="tag-value">{hazelcast_aws_tag_value}</property>
+                        <property name="hz-port">{hazelcast_aws_hz_port}</property>
                     </properties>
                 </discovery-strategy>
             </discovery-strategies>
+            -->
         </join>
-        <interfaces enabled="${hazelcast_interfaces_enabled}">
-            <interface>${hazelcast_interface1}</interface>
-            <interface>${hazelcast_interface2}</interface>
-            <interface>${hazelcast_interface3}</interface>
+        <!-- NOTE: for reference only, handled programmatically in HazelcastToolFactory.groovy, see notes above for why:
+            NOTE2: removed '$' so Hazelcast does not try to expand these, otherwise it will even in comments
+        <interfaces enabled="{hazelcast_interfaces_enabled}">
+            <interface>{hazelcast_interface1}</interface>
+            <interface>{hazelcast_interface2}</interface>
+            <interface>{hazelcast_interface3}</interface>
         </interfaces>
+        -->
     </network>
 
     <topic name="entity-cache-invalidate">

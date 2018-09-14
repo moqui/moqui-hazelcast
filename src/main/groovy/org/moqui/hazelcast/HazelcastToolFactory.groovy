@@ -13,7 +13,10 @@
  */
 package org.moqui.hazelcast
 
+import com.hazelcast.aws.AwsDiscoveryStrategyFactory
 import com.hazelcast.config.Config
+import com.hazelcast.config.DiscoveryStrategyConfig
+import com.hazelcast.config.JoinConfig
 import com.hazelcast.config.XmlConfigBuilder
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
@@ -52,9 +55,74 @@ class HazelcastToolFactory implements ToolFactory<HazelcastInstance> {
             hzConfig = new Config("moqui")
         } else {
             logger.info("Starting Hazelcast with hazelcast.xml from classpath")
+            // logger.info(ObjectUtilities.getStreamText(Thread.currentThread().getContextClassLoader().getResourceAsStream("hazelcast.xml")))
             hzConfig = new XmlConfigBuilder(Thread.currentThread().getContextClassLoader().getResourceAsStream("hazelcast.xml")).build()
             hzConfig.setInstanceName("moqui")
         }
+
+        // NOTE: programmatically set various settings instead of using ${} placeholders in hazelcast.xml because Hazelcast uses
+        //     placeholder value instead of empty/null if property not specified, ie no way to not set a property using that approach
+
+        if (System.getProperty("hazelcast_multicast_enabled") == "true") {
+            logger.info("Found hazelcast_multicast_enabled=true so adding multicast join config")
+
+            JoinConfig joinConfig = hzConfig.getNetworkConfig().getJoin()
+            joinConfig.getTcpIpConfig().setEnabled(false)
+            joinConfig.getMulticastConfig().setEnabled(true)
+            joinConfig.getAwsConfig().setEnabled(false)
+
+            joinConfig.multicastConfig.setMulticastGroup(System.getProperty("hazelcast_multicast_group") ?: "224.2.2.3")
+            joinConfig.multicastConfig.setMulticastPort((System.getProperty("hazelcast_multicast_port") ?: "54327") as int)
+        }
+        if (System.getProperty("hazelcast_tcp_ip_enabled") == "true") {
+            logger.info("Found hazelcast_tcp_ip_enabled=true so adding tcp/ip join config")
+
+            JoinConfig joinConfig = hzConfig.getNetworkConfig().getJoin()
+            joinConfig.getTcpIpConfig().setEnabled(true)
+            joinConfig.getMulticastConfig().setEnabled(false)
+            joinConfig.getAwsConfig().setEnabled(false)
+
+            String tcpIpMembers = System.getProperty("hazelcast_tcp_ip_members")
+            if (tcpIpMembers) {
+                joinConfig.tcpIpConfig.setMembers(Arrays.asList(tcpIpMembers.split(",")).collect({ it.trim() }))
+            } else {
+                logger.warn("No hazelcast_tcp_ip_members specified")
+            }
+        }
+        if (System.getProperty("hazelcast_aws_enabled") == "true") {
+            logger.info("Found hazelcast_aws_enabled=true so adding AwsDiscoveryStrategy")
+
+            hzConfig.getProperties().setProperty("hazelcast.discovery.enabled", "true")
+
+            JoinConfig joinConfig = hzConfig.getNetworkConfig().getJoin()
+            joinConfig.getTcpIpConfig().setEnabled(false)
+            joinConfig.getMulticastConfig().setEnabled(false)
+            joinConfig.getAwsConfig().setEnabled(false)
+            AwsDiscoveryStrategyFactory awsDiscoveryStrategyFactory = new AwsDiscoveryStrategyFactory()
+
+            Map<String, Comparable> properties = new HashMap<String, Comparable>()
+            if (System.getProperty("hazelcast_aws_access_key")) properties.put("access-key", System.getProperty("hazelcast_aws_access_key"))
+            if (System.getProperty("hazelcast_aws_secret_key")) properties.put("secret-key", System.getProperty("hazelcast_aws_secret_key"))
+            if (System.getProperty("hazelcast_aws_iam_role")) properties.put("iam-role", System.getProperty("hazelcast_aws_iam_role"))
+            if (System.getProperty("hazelcast_aws_region")) properties.put("region", System.getProperty("hazelcast_aws_region"))
+            properties.put("host-header",System.getProperty("hazelcast_aws_host_header") ?: "ec2.amazonaws.com")
+            if (System.getProperty("hazelcast_aws_security_group")) properties.put("security-group-name", System.getProperty("hazelcast_aws_security_group"))
+            if (System.getProperty("hazelcast_aws_tag_key")) properties.put("tag-key", System.getProperty("hazelcast_aws_tag_key"))
+            if (System.getProperty("hazelcast_aws_tag_value")) properties.put("tag-value", System.getProperty("hazelcast_aws_tag_value"))
+            properties.put("hz-port",System.getProperty("hazelcast_aws_hz_port") ?: "5701")
+
+            DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(awsDiscoveryStrategyFactory, properties)
+            joinConfig.getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig)
+        }
+        if (System.getProperty("hazelcast_interfaces_enabled") == "true") {
+            logger.info("Found hazelcast_interfaces_enabled=true so enabling interfaces")
+
+            hzConfig.networkConfig.interfaces.setEnabled(true)
+            if (System.getProperty("hazelcast_interface1")) hzConfig.networkConfig.interfaces.addInterface(System.getProperty("hazelcast_interface1"))
+            if (System.getProperty("hazelcast_interface2")) hzConfig.networkConfig.interfaces.addInterface(System.getProperty("hazelcast_interface2"))
+            if (System.getProperty("hazelcast_interface3")) hzConfig.networkConfig.interfaces.addInterface(System.getProperty("hazelcast_interface3"))
+        }
+
         hazelcastInstance = Hazelcast.getOrCreateHazelcastInstance(hzConfig)
     }
 
