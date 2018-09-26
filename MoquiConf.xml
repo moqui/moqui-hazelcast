@@ -65,9 +65,9 @@
                 <!-- Domain of session id cookie. Default is based on incoming request. -->
                 <!-- <init-param name="cookie-domain" value=".mywebsite.com"/> -->
                 <!-- Should cookie only be sent using a secure protocol? Default is false. -->
-                <init-param name="cookie-secure" value="false"/>
+                <init-param name="cookie-secure" value="true"/>
                 <!-- Should HttpOnly attribute be set on cookie ? Default is false. -->
-                <init-param name="cookie-http-only" value="false"/>
+                <init-param name="cookie-http-only" value="true"/>
                 <!-- Are you debugging? Default is false. -->
                 <init-param name="debug" value="false"/>
                 <!-- Do you want to shutdown HazelcastInstance during web application undeploy process? Default is true. -->
