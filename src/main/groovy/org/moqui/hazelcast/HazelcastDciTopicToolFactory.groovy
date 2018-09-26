@@ -100,7 +100,7 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
                 return
             }
             EntityCacheInvalidate eci = message.getMessageObject()
-            logger.info("====== HazelcastDciTopic message isCreate=${eci.isCreate}, evb: ${eci.evb?.toString()}")
+            // logger.info("====== HazelcastDciTopic message isCreate=${eci.isCreate}, evb: ${eci.evb?.toString()}")
             ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, {
                 ecfi.entityFacade.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
             })
