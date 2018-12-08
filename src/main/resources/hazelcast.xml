@@ -78,7 +78,7 @@
         <!-- register listener in ToolFactory so has ECFI reference: <message-listeners><message-listener>foo</message-listener></message-listeners> -->
     </topic>
     <executor-service name="service-executor">
-        <pool-size>4</pool-size>
+        <pool-size>16</pool-size>
         <queue-capacity>10000</queue-capacity>
         <statistics-enabled>true</statistics-enabled>
     </executor-service>
