@@ -25,7 +25,7 @@ def frameworkDir = file(moquiDir.absolutePath + '/framework')
 apply plugin: 'com.github.ben-manes.versions'
 buildscript {
   repositories { jcenter() }
-  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0' }
+  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.22.0' }
 }
 dependencyUpdates.resolutionStrategy = { componentSelection { rules -> rules.all { ComponentSelection selection ->
     boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'b', 'ea'].any { qualifier -> selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/ }
@@ -44,7 +44,7 @@ dependencies {
     compile project(':framework')
 
     // use hazelcast-all so various options are available, note that at least hazelcast-wm is needed for web listener
-    compile 'com.hazelcast:hazelcast-all:3.11.4' // Apache 2.0
+    compile 'com.hazelcast:hazelcast-all:3.12.2' // Apache 2.0
 }
 
 // by default the Java plugin runs test on build, change to not do that (only run test if explicit task)
