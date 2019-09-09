@@ -41,7 +41,7 @@
     <webapp-list>
         <webapp name="webroot">
             <!-- Hazelcast Session Replication Filter Configuration -->
-            <filter name="hazelcast-filter" class="com.hazelcast.web.WebFilter">
+            <filter name="hazelcast-filter" class="com.hazelcast.web.WebFilter" async-supported="true" priority="1">
                 <!-- Do you want to use an existing HazelcastInstance? Default is null. -->
                 <init-param name="instance-name" value="moqui"/>
                 <!-- Configuration xml location; * as servlet resource OR * as classpath resource OR * as URL
