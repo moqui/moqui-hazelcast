@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd"
+        default-menu-title="Hazelcast Info">
+
+    <actions>
+        <set field="hzToolFactory" from="ec.factory.getToolFactory('Hazelcast')"/>
+        <set field="hazelcastInstance" from="hzToolFactory?.getInstance()"/>
+        <if condition="hazelcastInstance == null"><return error="true" message="Hazelcast Instance not found"/></if>
+
+        <set field="cluster" from="hazelcastInstance.getCluster()"/>
+        <set field="clusterState" from="cluster.getClusterState()"/>
+
+        <set field="hzDciToolFactory" from="ec.factory.getToolFactory('HazelcastDciTopic')"/>
+    </actions>
+    <widgets>
+        <container-row><row-col md="4">
+            <label text="Cluster" type="strong"/>
+            <container-row><row-col xs="1"/><row-col xs="3"><label text="State" type="strong"/></row-col>
+                <row-col xs="8"><label text="${cluster.getClusterState()}"/></row-col></container-row>
+            <container-row><row-col xs="1"/><row-col xs="3"><label text="Version" type="strong"/></row-col>
+                <row-col xs="8"><label text="${cluster.getClusterVersion()}"/></row-col></container-row>
+
+            <container-row><row-col xs="1"/><row-col xs="3">
+                <label text="Members" type="strong"/>
+            </row-col><row-col xs="8">
+                <section-iterate name="ClusterMembers" list="cluster.getMembers()" entry="member"><widgets>
+                    <label text="${member.getAddress()} - ${member.getVersion()}${member.localMember() ? ' (local)' : ''}" type="div"/>
+                </widgets></section-iterate>
+            </row-col></container-row>
+
+        </row-col><row-col md="4">
+            <label text="Entity Cache DCI" type="strong"/>
+            <container-row><row-col xs="1"/><row-col xs="4"><label text="Published" type="strong"/></row-col>
+                <row-col xs="7"><label text="${ec.l10n.format(hzDciToolFactory?.getDciPublished(), '#,##0')}"/></row-col></container-row>
+            <container-row><row-col xs="1"/><row-col xs="4"><label text="Last Publish" type="strong"/></row-col>
+                <row-col xs="7"><label text="${ec.l10n.format(new Timestamp(hzDciToolFactory?.getLastPublishTime()), null)}" condition="hzDciToolFactory?.getLastPublishTime()"/></row-col></container-row>
+            <container-row><row-col xs="1"/><row-col xs="4"><label text="Received" type="strong"/></row-col>
+                <row-col xs="7"><label text="${ec.l10n.format(hzDciToolFactory?.getDciReceived(), '#,##0')}"/></row-col></container-row>
+            <container-row><row-col xs="1"/><row-col xs="4"><label text="Last Receive" type="strong"/></row-col>
+                <row-col xs="7"><label text="${ec.l10n.format(new Timestamp(hzDciToolFactory?.getLastReceiveTime()), null)}" condition="hzDciToolFactory?.getLastReceiveTime()"/></row-col></container-row>
+        </row-col><row-col md="4">
+
+        </row-col></container-row>
+    </widgets>
+</screen>

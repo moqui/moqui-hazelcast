@@ -14,18 +14,15 @@
 package org.moqui.hazelcast
 
 import com.hazelcast.core.HazelcastInstance
-import com.hazelcast.core.ITopic
-import com.hazelcast.core.Message
-import com.hazelcast.core.MessageListener
+import com.hazelcast.topic.ITopic
+import com.hazelcast.topic.Message
+import com.hazelcast.topic.MessageListener
 import groovy.transform.CompileStatic
 import org.moqui.BaseException
 import org.moqui.context.ExecutionContextFactory
 import org.moqui.context.ToolFactory
 import org.moqui.impl.context.ExecutionContextFactoryImpl
-import org.moqui.impl.context.ExecutionContextImpl
 import org.moqui.impl.context.NotificationMessageImpl
-import org.moqui.impl.entity.EntityCache.EntityCacheInvalidate
-import org.moqui.impl.entity.EntityFacadeImpl
 import org.moqui.util.SimpleTopic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

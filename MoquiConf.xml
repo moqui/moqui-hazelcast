@@ -82,6 +82,13 @@
         </webapp>
     </webapp-list>
 
+    <screen-facade>
+        <screen location="component://tools/screen/System.xml">
+            <subscreens-item name="HazelcastInfo" menu-title="Hazelcast Info" menu-index="21"
+                    location="component://moqui-hazelcast/screen/HazelcastInfo.xml"/>
+        </screen>
+    </screen-facade>
+
     <service-facade distributed-factory="HazelcastExecutor"/>
 
     <entity-facade distributed-cache-invalidate="true" dci-topic-factory="HazelcastDciTopic"/>

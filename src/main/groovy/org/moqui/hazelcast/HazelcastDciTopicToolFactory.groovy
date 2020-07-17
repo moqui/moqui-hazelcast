@@ -14,9 +14,9 @@
 package org.moqui.hazelcast
 
 import com.hazelcast.core.HazelcastInstance
-import com.hazelcast.core.ITopic
-import com.hazelcast.core.Message
-import com.hazelcast.core.MessageListener
+import com.hazelcast.topic.ITopic
+import com.hazelcast.topic.Message
+import com.hazelcast.topic.MessageListener
 import groovy.transform.CompileStatic
 import org.moqui.BaseException
 import org.moqui.Moqui
@@ -28,6 +28,8 @@ import org.moqui.impl.entity.EntityCache.EntityCacheInvalidate
 import org.moqui.util.SimpleTopic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.util.concurrent.atomic.AtomicLong
 
 
 /** A factory for getting a Topic to publish to (actually Hazelcast ITopic) and adds a MessageListener for distributed entity cache invalidation. */
@@ -42,6 +44,11 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
     private HazelcastInstance hazelcastInstance = null
     /** Entity Cache Invalidate Hazelcast Topic */
     private SimpleTopic<EntityCacheInvalidate> entityCacheInvalidateTopic = null
+
+    private AtomicLong dciReceiveCount = new AtomicLong(0)
+    private AtomicLong dciPublishCount = new AtomicLong(0)
+    private long lastReceive = 0
+    private long lastPublish = 0
 
     /** Default empty constructor */
     HazelcastDciTopicToolFactory() { }
@@ -61,9 +68,9 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
             logger.info("Getting Entity Cache Invalidate Hazelcast Topic and registering MessageListener")
             hazelcastInstance = hzToolFactory.getInstance()
             ITopic<EntityCacheInvalidate> iTopic = hazelcastInstance.getTopic("entity-cache-invalidate")
-            EntityCacheListener eciListener = new EntityCacheListener(ecfi)
+            EntityCacheListener eciListener = new EntityCacheListener(this)
             iTopic.addMessageListener(eciListener)
-            entityCacheInvalidateTopic = new TopicWrapper(iTopic)
+            entityCacheInvalidateTopic = new TopicWrapper(this, iTopic)
         }
     }
 
@@ -79,18 +86,33 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
     }
 
     ExecutionContextFactoryImpl getEcfi() { return ecfi }
+    long getDciReceived() { return dciReceiveCount.get() }
+    long getDciPublished() { return dciPublishCount.get() }
+    long getLastReceiveTime() { return lastReceive }
+    long getLastPublishTime() { return lastPublish }
 
     static class TopicWrapper implements SimpleTopic<EntityCacheInvalidate> {
+        HazelcastDciTopicToolFactory hzDciToolFactory
         ITopic<EntityCacheInvalidate> iTopic
-        TopicWrapper(ITopic<EntityCacheInvalidate> iTopic) { this.iTopic = iTopic }
+        TopicWrapper(HazelcastDciTopicToolFactory hzDciToolFactory, ITopic<EntityCacheInvalidate> iTopic) {
+            this.hzDciToolFactory = hzDciToolFactory
+            this.iTopic = iTopic
+        }
         @Override
-        void publish(EntityCacheInvalidate message) { iTopic.publish(message) }
+        void publish(EntityCacheInvalidate message) {
+            iTopic.publish(message)
+
+            hzDciToolFactory.dciPublishCount.incrementAndGet()
+            hzDciToolFactory.lastPublish = System.currentTimeMillis()
+        }
     }
 
     static class EntityCacheListener implements MessageListener<EntityCacheInvalidate> {
+        HazelcastDciTopicToolFactory hzDciToolFactory
         ExecutionContextFactoryImpl ecfi
-        EntityCacheListener(ExecutionContextFactoryImpl ecfi) {
-            this.ecfi = ecfi
+        EntityCacheListener(HazelcastDciTopicToolFactory hzDciToolFactory) {
+            this.hzDciToolFactory = hzDciToolFactory
+            this.ecfi = hzDciToolFactory.getEcfi()
         }
 
         @Override
@@ -100,11 +122,14 @@ class HazelcastDciTopicToolFactory implements ToolFactory<SimpleTopic<EntityCach
                 return
             }
             EntityCacheInvalidate eci = message.getMessageObject()
-            // logger.info("====== HazelcastDciTopic message isCreate=${eci.isCreate}, evb: ${eci.evb?.toString()}")
+            // logger.error("====== HazelcastDciTopic message isCreate=${eci.isCreate}, evb: ${eci.evb?.toString()}")
             ExecutionContextImpl.ThreadPoolRunnable runnable = new ExecutionContextImpl.ThreadPoolRunnable(ecfi, {
                 ecfi.entityFacade.getEntityCache().clearCacheForValueActual(eci.evb, eci.isCreate)
             })
             ecfi.workerPool.execute(runnable)
+
+            hzDciToolFactory.dciReceiveCount.incrementAndGet()
+            hzDciToolFactory.lastReceive = System.currentTimeMillis()
         }
     }
 

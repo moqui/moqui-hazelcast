@@ -25,7 +25,7 @@ def frameworkDir = file(moquiDir.absolutePath + '/framework')
 apply plugin: 'com.github.ben-manes.versions'
 buildscript {
   repositories { jcenter() }
-  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.27.0' }
+  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0' }
 }
 dependencyUpdates.resolutionStrategy = { componentSelection { rules -> rules.all { ComponentSelection selection ->
     boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'b', 'ea'].any { qualifier -> selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/ }
@@ -44,7 +44,8 @@ dependencies {
     compile project(':framework')
 
     // use hazelcast-all so various options are available, note that at least hazelcast-wm is needed for web listener
-    compile 'com.hazelcast:hazelcast-all:3.12.5' // Apache 2.0
+    // NOTE: Hazelcast 4 has many non-backward compatible changes, see: https://docs.hazelcast.org/docs/4.0/manual/html-single/#upgrading-to-hazelcast-imdg-4-0
+    compile 'com.hazelcast:hazelcast-all:4.0.2' // Apache 2.0
 }
 
 // by default the Java plugin runs test on build, change to not do that (only run test if explicit task)
@@ -55,8 +56,8 @@ task cleanLib(type: Delete) { delete fileTree(dir: projectDir.absolutePath+'/lib
 clean.dependsOn cleanLib
 
 jar {
-    destinationDir = file(projectDir.absolutePath + '/lib')
-    baseName = jarBaseName
+    destinationDirectory = file(projectDir.absolutePath + '/lib')
+    archiveBaseName = jarBaseName
 }
 task copyDependencies { doLast {
     copy { from (configurations.runtime - project(':framework').configurations.runtime - project(':framework').jar.archivePath)
