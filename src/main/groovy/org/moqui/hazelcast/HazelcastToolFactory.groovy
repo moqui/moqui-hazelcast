@@ -17,6 +17,7 @@ import com.hazelcast.aws.AwsDiscoveryStrategyFactory
 import com.hazelcast.config.Config
 import com.hazelcast.config.DiscoveryStrategyConfig
 import com.hazelcast.config.JoinConfig
+import com.hazelcast.config.PartitionGroupConfig
 import com.hazelcast.config.XmlConfigBuilder
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
@@ -146,6 +147,8 @@ class HazelcastToolFactory implements ToolFactory<HazelcastInstance> {
 
             DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(k8sDiscoveryStrategyFactory, properties)
             joinConfig.getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig)
+            if (System.getProperty("hazelcast_k8s_zone_aware") == "true")
+                hzConfig.getPartitionGroupConfig().setEnabled(true).setGroupType(PartitionGroupConfig.MemberGroupType.ZONE_AWARE)
         }
 
         hazelcastInstance = Hazelcast.getOrCreateHazelcastInstance(hzConfig)

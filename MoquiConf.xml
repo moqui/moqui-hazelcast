@@ -34,6 +34,7 @@
     <default-property name="hazelcast_k8s_service_label_value" value=""/>
     <default-property name="hazelcast_k8s_pod_label_name" value=""/>
     <default-property name="hazelcast_k8s_pod_label_value" value=""/>
+    <default-property name="hazelcast_k8s_zone_aware" value="false"/>
 
     <tools notification-topic-factory="HazelcastNotificationTopic">
         <!-- Hazelcast distributed tool set for caching, topics, executors, etc -->
