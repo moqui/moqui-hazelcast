@@ -27,6 +27,15 @@
     <default-property name="hazelcast_interface2" value=""/>
     <default-property name="hazelcast_interface3" value=""/>
 
+    <default-property name="hazelcast_k8s_enabled" value="false"/>
+    <default-property name="hazelcast_k8s_namespace" value=""/>
+    <default-property name="hazelcast_k8s_service_name" value=""/>
+    <default-property name="hazelcast_k8s_service_label_name" value=""/>
+    <default-property name="hazelcast_k8s_service_label_value" value=""/>
+    <default-property name="hazelcast_k8s_pod_label_name" value=""/>
+    <default-property name="hazelcast_k8s_pod_label_value" value=""/>
+    <default-property name="hazelcast_k8s_zone_aware" value="false"/>
+
     <tools notification-topic-factory="HazelcastNotificationTopic">
         <!-- Hazelcast distributed tool set for caching, topics, executors, etc -->
         <tool-factory class="org.moqui.hazelcast.HazelcastToolFactory" init-priority="05" disabled="false"/>
