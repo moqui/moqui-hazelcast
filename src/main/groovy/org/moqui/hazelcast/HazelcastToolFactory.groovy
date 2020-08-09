@@ -135,20 +135,21 @@ class HazelcastToolFactory implements ToolFactory<HazelcastInstance> {
             joinConfig.getMulticastConfig().setEnabled(false)
             joinConfig.getAwsConfig().setEnabled(false)
             joinConfig.getKubernetesConfig().setEnabled(true)
-            HazelcastKubernetesDiscoveryStrategyFactory k8sDiscoveryStrategyFactory = new HazelcastKubernetesDiscoveryStrategyFactory()
 
-            Map<String, Comparable> properties = new HashMap<String, Comparable>()
-            properties.put("namespace", System.getProperty("hazelcast_k8s_namespace") ?: "default")
-            if (System.getProperty("hazelcast_k8s_service_name")) properties.put("service-name", System.getProperty("hazelcast_k8s_service_name"))
-            if (System.getProperty("hazelcast_k8s_service_label_name")) properties.put("service-label-name", System.getProperty("hazelcast_k8s_service_label_name"))
-            if (System.getProperty("hazelcast_k8s_service_label_value")) properties.put("service-label-value", System.getProperty("hazelcast_k8s_service_label_value"))
-            if (System.getProperty("hazelcast_k8s_pod_label_name")) properties.put("pod-label-name", System.getProperty("hazelcast_k8s_pod_label_name"))
-            if (System.getProperty("hazelcast_k8s_pod_label_value")) properties.put("pod-label-value", System.getProperty("hazelcast_k8s_pod_label_value"))
-
-            DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(k8sDiscoveryStrategyFactory, properties)
-            joinConfig.getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig)
+            joinConfig.kubernetesConfig.setProperty("namespace", System.getProperty("hazelcast_k8s_namespace") ?: "default")
+            if (System.getProperty("hazelcast_k8s_service_name"))
+                joinConfig.kubernetesConfig.setProperty("service-name", System.getProperty("hazelcast_k8s_service_name"))
+            if (System.getProperty("hazelcast_k8s_service_label_name"))
+                joinConfig.kubernetesConfig.setProperty("service-label-name", System.getProperty("hazelcast_k8s_service_label_name"))
+            if (System.getProperty("hazelcast_k8s_service_label_value"))
+                joinConfig.kubernetesConfig.setProperty("service-label-value", System.getProperty("hazelcast_k8s_service_label_value"))
+            if (System.getProperty("hazelcast_k8s_pod_label_name"))
+                joinConfig.kubernetesConfig.setProperty("pod-label-name", System.getProperty("hazelcast_k8s_pod_label_name"))
+            if (System.getProperty("hazelcast_k8s_pod_label_value"))
+                joinConfig.kubernetesConfig.setProperty("pod-label-value", System.getProperty("hazelcast_k8s_pod_label_value"))
             if (System.getProperty("hazelcast_k8s_zone_aware") == "true")
                 hzConfig.getPartitionGroupConfig().setEnabled(true).setGroupType(PartitionGroupConfig.MemberGroupType.ZONE_AWARE)
+
         }
 
         hazelcastInstance = Hazelcast.getOrCreateHazelcastInstance(hzConfig)
