@@ -114,6 +114,9 @@ class HazelcastToolFactory implements ToolFactory<HazelcastInstance> {
             if (System.getProperty("hazelcast_aws_security_group")) properties.put("security-group-name", System.getProperty("hazelcast_aws_security_group"))
             if (System.getProperty("hazelcast_aws_tag_key")) properties.put("tag-key", System.getProperty("hazelcast_aws_tag_key"))
             if (System.getProperty("hazelcast_aws_tag_value")) properties.put("tag-value", System.getProperty("hazelcast_aws_tag_value"))
+            if (System.getProperty("hazelcast_aws_service_name")) properties.put("service-name", System.getProperty("hazelcast_aws_service_name"))
+            if (System.getProperty("hazelcast_aws_family")) properties.put("family", System.getProperty("hazelcast_aws_family"))
+            if (System.getProperty("hazelcast_aws_cluster")) properties.put("cluster", System.getProperty("hazelcast_aws_cluster"))
             properties.put("hz-port",System.getProperty("hazelcast_aws_hz_port") ?: "5701")
 
             DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(awsDiscoveryStrategyFactory, properties)
