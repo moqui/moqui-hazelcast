@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.moqui.BaseException
 import org.moqui.context.ExecutionContextFactory
 import org.moqui.context.ToolFactory
+import org.moqui.impl.context.ExecutionContextFactoryImpl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -42,9 +43,9 @@ class HazelcastExecutorToolFactory implements ToolFactory<ExecutorService> {
     @Override
     String getName() { return TOOL_NAME }
     @Override
-    void init(ExecutionContextFactory ecf) { }
+    void preFacadeInit(ExecutionContextFactory ecf) { }
     @Override
-    void preFacadeInit(ExecutionContextFactory ecf) {
+    void init(ExecutionContextFactory ecf) {
         this.ecf = ecf
 
         ToolFactory<HazelcastInstance> hzToolFactory = ecf.getToolFactory(HazelcastToolFactory.TOOL_NAME)
@@ -53,6 +54,10 @@ class HazelcastExecutorToolFactory implements ToolFactory<ExecutorService> {
         } else {
             HazelcastInstance hazelcastInstance = hzToolFactory.getInstance()
             executorService = hazelcastInstance.getExecutorService("service-executor")
+        }
+
+        if (ecf instanceof ExecutionContextFactoryImpl) {
+            ecf.serviceFacade.setDistributedExecutorService(executorService)
         }
     }
 

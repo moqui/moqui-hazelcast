@@ -98,7 +98,8 @@
         </screen>
     </screen-facade>
 
-    <service-facade distributed-factory="HazelcastExecutor"/>
+    <!-- Now set on ServiceFacade programmatically in post-facade init so HazelcastExecutorToolFactory doesn't have to init before facades:
+        <service-facade distributed-factory="HazelcastExecutor"/> -->
 
     <entity-facade distributed-cache-invalidate="true" dci-topic-factory="HazelcastDciTopic"/>
 </moqui-conf>
