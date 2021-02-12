@@ -24,7 +24,10 @@ def frameworkDir = file(moquiDir.absolutePath + '/framework')
 // to run use "gradle dependencyUpdates"
 apply plugin: 'com.github.ben-manes.versions'
 buildscript {
-  repositories { jcenter() }
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
   dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0' }
 }
 dependencyUpdates.resolutionStrategy = { componentSelection { rules -> rules.all { ComponentSelection selection ->
@@ -33,7 +36,7 @@ dependencyUpdates.resolutionStrategy = { componentSelection { rules -> rules.all
 } } }
 repositories {
     flatDir name: 'localLib', dirs: frameworkDir.absolutePath + '/lib'
-    jcenter()
+    mavenCentral()
 }
 
 // Log4J has annotation processors, disable to avoid warning
