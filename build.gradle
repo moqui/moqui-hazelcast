@@ -11,7 +11,7 @@
  * along with this software (see the LICENSE.md file). If not, see
  * <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
-
+apply plugin: 'java-library'
 apply plugin: 'groovy'
 
 // sourceCompatibility = '1.8'
@@ -44,11 +44,11 @@ tasks.withType(JavaCompile) { options.compilerArgs << "-proc:none" }
 tasks.withType(GroovyCompile) { options.compilerArgs << "-proc:none" }
 
 dependencies {
-    compile project(':framework')
+    api project(':framework')
 
     // use hazelcast-all so various options are available, note that at least hazelcast-wm is needed for web listener
     // NOTE: Hazelcast 4 has many non-backward compatible changes, see: https://docs.hazelcast.org/docs/4.0/manual/html-single/#upgrading-to-hazelcast-imdg-4-0
-    compile 'com.hazelcast:hazelcast-all:4.0.2' // Apache 2.0
+    api 'com.hazelcast:hazelcast-all:4.0.2' // Apache 2.0
 }
 
 // by default the Java plugin runs test on build, change to not do that (only run test if explicit task)
@@ -63,7 +63,7 @@ jar {
     archiveBaseName = jarBaseName
 }
 task copyDependencies { doLast {
-    copy { from (configurations.runtime - project(':framework').configurations.runtime - project(':framework').jar.archivePath)
+    copy { from (configurations.runtimeClasspath - project(':framework').configurations.runtimeClasspath - project(':framework').jar.archivePath)
         into file(projectDir.absolutePath + '/lib') }
 } }
 copyDependencies.dependsOn cleanLib
