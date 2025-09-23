@@ -113,4 +113,28 @@
         <in-memory-format>OBJECT</in-memory-format><!-- or BINARY, faster? -->
         <!-- <eviction size="10000" max-size-policy="ENTRY_COUNT" eviction-policy="LFU"/> -->
     </cache>
+
+<!-- 会话存储 Map 配置 -->
+    <map name="moqui-sessions">
+           <time-to-live-seconds>1800</time-to-live-seconds>
+        <max-idle-seconds>900</max-idle-seconds>
+        <backup-count>1</backup-count>
+        <async-backup-count>0</async-backup-count>
+        <in-memory-format>OBJECT</in-memory-format>
+        <eviction eviction-policy="LRU" max-size-policy="USED_HEAP_PERCENTAGE" size="80"/>
+<!--        <statistics-enabled>true</statistics-enabled>-->
+    </map>
+    
+    <!-- 兼容旧的会话 Map 名称 -->
+    <map name="my-sessions">
+        <time-to-live-seconds>1800</time-to-live-seconds>
+        <max-idle-seconds>900</max-idle-seconds>
+        <backup-count>1</backup-count>
+        <async-backup-count>0</async-backup-count>
+        <in-memory-format>OBJECT</in-memory-format>
+        <eviction eviction-policy="LRU" max-size-policy="USED_HEAP_PERCENTAGE" size="80"/>
+<!--        <statistics-enabled>true</statistics-enabled>-->
+    </map>
+
+        
 </hazelcast>
