@@ -26,7 +26,7 @@ apply plugin: 'com.github.ben-manes.versions'
 buildscript {
     repositories {
         mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url = "https://plugins.gradle.org/m2/" }
     }
   dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0' }
 }
@@ -63,8 +63,12 @@ jar {
     archiveBaseName = jarBaseName
 }
 task copyDependencies { doLast {
-    copy { from (configurations.runtimeClasspath - project(':framework').configurations.runtimeClasspath - project(':framework').jar.archivePath)
-        into file(projectDir.absolutePath + '/lib') }
+    copy {
+        from (configurations.runtimeClasspath -
+              project(':framework').configurations.runtimeClasspath -
+              project(':framework').tasks.jar.archiveFile.get().asFile)
+        into file(projectDir.absolutePath + '/lib')
+    }
 } }
 copyDependencies.dependsOn cleanLib
 jar.dependsOn copyDependencies
