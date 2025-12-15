@@ -62,13 +62,11 @@ jar {
     destinationDirectory = file(projectDir.absolutePath + '/lib')
     archiveBaseName = jarBaseName
 }
-task copyDependencies { doLast {
-    copy {
-        from (configurations.runtimeClasspath -
-              project(':framework').configurations.runtimeClasspath -
-              project(':framework').tasks.jar.archiveFile.get().asFile)
-        into file(projectDir.absolutePath + '/lib')
-    }
-} }
-copyDependencies.dependsOn cleanLib
+tasks.register('copyDependencies', Copy) {
+    dependsOn cleanLib
+    from (configurations.runtimeClasspath -
+          project(':framework').configurations.runtimeClasspath -
+          project(':framework').tasks.named('jar').get().archiveFile.get().asFile)
+    into file(projectDir.absolutePath + '/lib')
+}
 jar.dependsOn copyDependencies
