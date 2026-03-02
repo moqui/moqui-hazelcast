@@ -21,19 +21,6 @@ def jarBaseName = componentNode.'@name'
 def moquiDir = projectDir.parentFile.parentFile.parentFile
 def frameworkDir = file(moquiDir.absolutePath + '/framework')
 
-// to run use "gradle dependencyUpdates"
-apply plugin: 'com.github.ben-manes.versions'
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-  dependencies { classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0' }
-}
-dependencyUpdates.resolutionStrategy = { componentSelection { rules -> rules.all { ComponentSelection selection ->
-    boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'b', 'ea'].any { qualifier -> selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/ }
-    if (rejected) selection.reject('Release candidate')
-} } }
 repositories {
     flatDir name: 'localLib', dirs: frameworkDir.absolutePath + '/lib'
     mavenCentral()
@@ -45,10 +32,8 @@ tasks.withType(GroovyCompile) { options.compilerArgs << "-proc:none" }
 
 dependencies {
     api project(':framework')
-
-    // use hazelcast-all so various options are available, note that at least hazelcast-wm is needed for web listener
-    // NOTE: Hazelcast 4 has many non-backward compatible changes, see: https://docs.hazelcast.org/docs/4.0/manual/html-single/#upgrading-to-hazelcast-imdg-4-0
-    api 'com.hazelcast:hazelcast-all:4.0.2' // Apache 2.0
+    api 'com.hazelcast:hazelcast:5.6.0' // Apache 2.0
+    api 'com.hazelcast:hazelcast-wm:5.1' // Apache 2.0
 }
 
 // by default the Java plugin runs test on build, change to not do that (only run test if explicit task)
@@ -62,9 +47,11 @@ jar {
     destinationDirectory = file(projectDir.absolutePath + '/lib')
     archiveBaseName = jarBaseName
 }
-task copyDependencies { doLast {
-    copy { from (configurations.runtimeClasspath - project(':framework').configurations.runtimeClasspath - project(':framework').jar.archivePath)
-        into file(projectDir.absolutePath + '/lib') }
-} }
-copyDependencies.dependsOn cleanLib
+tasks.register('copyDependencies', Copy) {
+    dependsOn cleanLib
+    from (configurations.runtimeClasspath -
+          project(':framework').configurations.runtimeClasspath -
+          project(':framework').tasks.named('jar').get().archiveFile.get().asFile)
+    into file(projectDir.absolutePath + '/lib')
+}
 jar.dependsOn copyDependencies
